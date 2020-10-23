@@ -1,0 +1,23 @@
+on:
+  push:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        try: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    env:
+      IMAGE: mcr.microsoft.com/dotnet/core/sdk:3.1
+      TARGET_IMAGE: docker.pkg.github.com/${{ github.repository }}/image-${{ matrix.try }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: docker login https://docker.pkg.github.com -u token -p ${{ github.token }}
+
+      - run: docker pull ${{ env.IMAGE }}
+
+      - run: docker tag ${{ env.IMAGE }} ${{ env.TARGET_IMAGE }}
+
+      - run: docker push ${{ env.TARGET_IMAGE }}
